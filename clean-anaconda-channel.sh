@@ -28,10 +28,17 @@ parse() {
 }
 
 clean() {
+  echo "entering clean() function"
   org=$1
   channel=$2
   clean=$3
   new_version=$4
+
+  echo "org=$org"
+  echo "channel=$channel"
+  echo "clean=$clean"
+  echo "new_version=$new_version"
+
   while read line
   do
     echo "anaconda remove $org/$channel/$line"
@@ -40,6 +47,7 @@ clean() {
       anaconda remove $org/$channel/$line --force;
     fi;
   done
+  echo "leaving clean() function"
 }
 
 org=$1
@@ -74,3 +82,4 @@ fi;
 
 # echo "Searching https://anaconda.org/$org/$channel"
 show_anaconda_versions $org $channel | parse | clean $org $channel $clean $new_version
+# show_anaconda_versions $org $channel | parse
