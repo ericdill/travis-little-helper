@@ -35,7 +35,7 @@ clean() {
   while read line
   do
     echo "anaconda remove $org/$channel/$line"
-    if [ "$line" -ne "$new_version" ]; then
+    if [ "$line" != "$new_version" ]; then
       echo "Removing version $version from anaconda.org/$org/$channel"
       anaconda remove $org/$channel/$line --force;
     fi;
