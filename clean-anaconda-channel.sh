@@ -46,7 +46,7 @@ clean() {
         echo "Removing version $version from anaconda.org/$org/$channel";
         anaconda remove $org/$channel/$line --force;
       else
-        echo "Would have removed $version from anaconda.org/$org/$channel";
+        echo "Would have removed $version from anaconda.org/$org/$channel/$line";
       fi;
     fi;
   done
