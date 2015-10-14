@@ -40,7 +40,7 @@ clean() {
   echo "new_version=$new_version"
   while read line
   do
-    echo "anaconda remove $org/$channel/$line"
+    echo "Removal command --> anaconda remove $org/$channel/$line --force"
     if [ "$line" != "$new_version" ]; then
       if [ $clean == "true" ]; then
         echo "Removing version $version from anaconda.org/$org/$channel";
