@@ -1,0 +1,19 @@
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+  allowed_fail:
+    - nightly
+
+require_metadatastore_config: true
+require_filestore_config: false
+conda_channels:
+  - lightsource2
+  - lightsource2-dev
+
+pinned_versions:
+  - numpy=1.9
+
+conda_build: true
+conda_upload: true
+conda_upload_channel: lightsource2-dev
