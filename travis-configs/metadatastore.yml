@@ -5,7 +5,7 @@ python:
   - nightly
 allow_failures:
   - python: nightly
-  - env: PYMONGO=>3
+  - env: PYMONGO=">3"
 
 
 # should be of the format '<3', '=2.7.3', or '>4.3'
