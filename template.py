@@ -67,6 +67,11 @@ def execute_programmatically(input_config_yaml, output_dir):
         print('env matrix = %s' % matrix)
         travis_config['matrix'] = matrix
         travis_config['env'] = {k.lower(): k.upper() for k in env.keys()}
+
+    #explicitly format the allow_failures section
+    allow_failures = travis_config.get('allow_failures', {})
+    allow_failures = ["%s: %s" % (k, v) for row in allow_failures for k, v in row.items()]
+    travis_config['allow_failures'] = allow_failures
     # create the jinja environment
     jinja_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
     template = jinja_env.get_template('nsls2.tmpl')

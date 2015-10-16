@@ -14,7 +14,7 @@ matrix:
     env: "{{ line }}"{% endfor %}{% endfor %}
 {% if allow_failures %}
   allow_failures:{% for fail_version in allow_failures %}
-    - python: {{ fail_version }}{% endfor %}
+    - {{ fail_version }}{% endfor %}
 {% endif %}
 
 before_install:
