@@ -62,7 +62,7 @@ def execute_programmatically(input_config_yaml, output_dir):
         env_outer_prod = nest_all_the_loops(env_list.copy())
         matrix = []
         for mat in env_outer_prod:
-            repos = ' '.join(['%s={%s}' % (k.upper(), k) for k in sorted(mat.keys()) if k != 'python'])
+            repos = ' '.join(['%s="{%s}"' % (k.upper(), k) for k in sorted(mat.keys()) if k != 'python'])
             matrix.append(('%s' % repos).format(**mat))
         print('env matrix = %s' % matrix)
         travis_config['matrix'] = matrix
