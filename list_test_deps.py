@@ -65,7 +65,7 @@ def execute_programmatically(path_to_meta_yaml, env=None):
     # print('version_dict = %s' % version_dict)
     # override conda recipe versions with environmental variable versions
     for lib_name in env:
-        version_dict[lib_name.lower()] = os.environ[lib_name]
+        version_dict[lib_name.lower()] = os.environ[lib_name.upper()]
     return ["%s%s" % (k, v) for k, v in version_dict.items()]
     # return [s.replace(' ', '') for s in meta_dict['test']['requires']]
 
