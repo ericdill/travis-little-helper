@@ -35,16 +35,24 @@ def main():
         help="Path to meta.yaml",
         nargs="?"
     )
+    p.add_argument(
+        '-e', '--environment',
+        help="Environmental variables to grab",
+        nargs="+",
+    )
     args = p.parse_args()
     return execute(args, p)
 
 
 def execute(args, argparser):
     meta_yaml_path = args.path
-    return execute_programmatically(meta_yaml_path)
+    env = args.environment
+    return execute_programmatically(meta_yaml_path, env)
 
 
-def execute_programmatically(path_to_meta_yaml):
+def execute_programmatically(path_to_meta_yaml, env=None):
+    if env is None:
+        env = []
     meta_dict = safe_yaml_read(path_to_meta_yaml)
     test_section = meta_dict.get('test', {})
     test_deps = test_section.get('requires', {})
@@ -55,10 +63,9 @@ def execute_programmatically(path_to_meta_yaml):
         version = dep[1] if len(dep) == 2 else ''
         version_dict[name] = version
     # print('version_dict = %s' % version_dict)
-
-    # override by environmental variables
-    for name, version in version_dict.items():
-        version_dict[name] = os.environ.get(name.upper(), version)
+    # override conda recipe versions with environmental variable versions
+    for lib_name in env:
+        version_dict[lib_name.lower()] = os.environ[lib_name]
     return ["%s%s" % (k, v) for k, v in version_dict.items()]
     # return [s.replace(' ', '') for s in meta_dict['test']['requires']]
 

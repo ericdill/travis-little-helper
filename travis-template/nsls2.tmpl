@@ -18,6 +18,11 @@ matrix:
 {% endif %}
 
 before_install:
+  # `git describe` failed a couple of times if I don't `git fetch --unshallow`
+  - git fetch --unshallow
+  # GRAB THE HELPER SCRIPTS
+  - git clone https://github.com/ericdill/travis-little-helper ../travis-little-helper
+  # ECHO THE ENVIRONMENTAL VARIABLES THAT WERE SET
   {% if env %}{% for lib, envvar in env | dictsort %}
   - echo ${{ envvar }}{% endfor %}{% endif %}
   # INSTALL CONDA
@@ -50,22 +55,27 @@ before_install:
   # INSTALL DEPS FOR BUILDING AND UPLOADING
   - conda install conda-build jinja2 anaconda-client
   - conda install -c ericdill depfinder
+  - source activate testenv
   - pip install https://github.com/ericdill/conda-skeletor/zipball/master#egg=conda_skeletor
-  # SET UP THE TEST ENVIRONMENT
+  # MAKE THE CONDA RECIPE
+  - wget https://raw.githubusercontent.com/ericdill/conda-skeletor-configs/master/metadatastore/conda-skeletor.yml
+  - pip install https://github.com/ericdill/conda-skeletor/zipball/master#egg=conda_skeletor
+  - conda skeletor -p . -o conda-recipe
+
+
   - conda create -n testenv pip nose python=$TRAVIS_PYTHON_VERSION "pymongo=2.9" six pyyaml numpy pandas jinja2 mongoengine boltons prettytable humanize
   - source activate testenv
   - pip install coveralls codecov
   {% if env %}- conda install{% for lib, envvar in env | dictsort %} "{{ lib }}${{ envvar }}"{% endfor %}{% endif %}
 
 install:
+  - conda install `python ../travis-little-helper/list_test_deps.py -p conda-recipe/meta.yaml -e {% for lib, envvar in env | dictsort %} {{ lib }}{% endfor %}`
   - python setup.py install
   # SOME DEBUG OUTPUT
   - python -c "import $REPO_NAME; print($REPO_NAME.__version__)"
 
 script:
   - python run_tests.py -v{% if conda_build %}
-  # NEED TO GET (AT LEAST) THE COMMITS UP TO THE MOST RECENT TAG
-  - git fetch --unshallow
   - "$CONDA_BUILD_COMMAND"{% endif %}
 
 after_success:
