@@ -1,5 +1,4 @@
 from __future__ import print_function, absolute_import
-import subprocess
 import yaml
 from argparse import ArgumentParser
 import re
@@ -36,15 +35,9 @@ def main():
         help="Path to meta.yaml",
         nargs="?"
     )
-    p.add_argument(
-        '-e', '--environment',
-        help="Environmental variables to grab",
-        nargs="+",
-    )
-
     args = p.parse_args()
-
     return execute(args, p)
+
 
 def execute(args, argparser):
     meta_yaml_path = args.path
@@ -68,6 +61,7 @@ def execute_programmatically(path_to_meta_yaml):
         version_dict[name] = os.environ.get(name.upper(), version)
     return ["%s%s" % (k, v) for k, v in version_dict.items()]
     # return [s.replace(' ', '') for s in meta_dict['test']['requires']]
+
 
 if __name__ == "__main__":
     test_requirements = main()
