@@ -15,6 +15,13 @@ matrix:
     - python: {{ fail_version }}{% endfor %}
 {% endif %}
 
+{% if env %}
+env:
+  {% for line in env %}
+  - {{ line }}
+  {% endfor %}
+{% endif %}
+
 before_install:
   # INSTALL CONDA
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh

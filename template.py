@@ -30,11 +30,33 @@ def execute(args, p):
     input_config_yaml = args.travis_config
     execute_programmatically(input_config_yaml, output_dir)
 
+
+def nest_all_the_loops(iterable, matrix=None, matrices=None):
+    if matrix is None:
+        matrix = {}
+    if matrices is None:
+        matrices = []
+    local_iterable = iterable.copy()
+    try:
+        lib, versions = local_iterable.pop(0)
+    except IndexError:
+        matrices.append(matrix.copy())
+        return
+    for version in versions:
+        matrix[lib] = version
+        nest_all_the_loops(local_iterable, matrix, matrices)
+    return matrices
+
+
 def execute_programmatically(input_config_yaml, output_dir):
     print("input_config_yaml = %s" % input_config_yaml)
     print("output_directory = %s" % output_dir)
     travis_config = yaml.load(open(input_config_yaml, 'r'))
     print('travis_config = %s' % travis_config)
+    # turn the env section of the travis config into the outer product of environments
+    libs = [(k, v) for k, v in travis_config.get('env', {}).items()]
+    if libs:
+        travis_config['env'] = nest_all_the_loops(libs.copy())
 
     # create the jinja environment
     jinja_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))

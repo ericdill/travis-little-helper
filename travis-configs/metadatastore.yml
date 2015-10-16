@@ -6,6 +6,11 @@ python:
 allow_failures:
   - nightly
 
+env:
+  pymongo:
+    - <3
+    - >3
+
 conda_channels:
   - lightsource2
   - lightsource2-dev
