@@ -21,7 +21,7 @@ conda_channels:
 pinned_versions:
   - numpy=1.9
 
-conda_build: false
+conda_build: true
 conda_upload: true
 clean_upload_channel: false
 conda_upload_channel: lightsource2-dev

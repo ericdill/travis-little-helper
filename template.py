@@ -70,8 +70,8 @@ def execute_programmatically(input_config_yaml, output_dir):
 
     #explicitly format the allow_failures section
     allow_failures = travis_config.get('allow_failures', {})
-    allow_failures = ["%s: %s" % (k, v) for row in allow_failures for k, v in row.items()]
-    travis_config['allow_failures'] = allow_failures
+    allow_failure_rows = ["%s: %s" % (k, v) for row in allow_failures for k, v in row.items()]
+    travis_config['allow_failure_rows'] = allow_failure_rows
     # create the jinja environment
     jinja_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
     template = jinja_env.get_template('nsls2.tmpl')

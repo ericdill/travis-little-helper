@@ -12,12 +12,13 @@ matrix:
   include:{% for pyver in python %}{% for line in matrix %}
   - python: {{ pyver }}
     env: {{ line }}{% endfor %}{% endfor %}
-{% if allow_failures %}
-  allow_failures:{% for fail_version in allow_failures %}
-    - {{ fail_version }}{% endfor %}
+{% if allow_failure_rows %}
+  allow_failures:{% for fail_row in allow_failure_rows %}
+    - {{ fail_row }}{% endfor %}
 {% endif %}
 
 before_install:
+  - env
   # `git describe` failed a couple of times if I don't `git fetch --unshallow`
   - git fetch --unshallow
   # GRAB THE HELPER SCRIPTS
@@ -57,7 +58,6 @@ before_install:
   - conda create -n testenv python=$TRAVIS_PYTHON_VERSION
   - source activate testenv
   - conda install -c ericdill depfinder
-  - pip install https://github.com/ericdill/conda-skeletor/zipball/master#egg=conda_skeletor
   # MAKE THE CONDA RECIPE
   - wget https://raw.githubusercontent.com/ericdill/conda-skeletor-configs/master/metadatastore/conda-skeletor.yml
   - pip install https://github.com/ericdill/conda-skeletor/zipball/master#egg=conda_skeletor
@@ -84,7 +84,9 @@ after_success:
   # PULL REQUEST
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
       $CONDA_BUILD_COMMAND --output | bash ../travis-little-helper/anaconda-version-string.sh > version;
-      anaconda login --username {{ anaconda_user }} --password $ANACONDA_PASS --hostname "$TRAVIS_PYTHON_VERSION-`cat version`";
+      export ANACONDA_HOSTNAME="$TRAVIS_PYTHON_VERSION-`cat version`";
+      echo $ANACONDA_HOSTNAME;
+      anaconda login --username {{ anaconda_user }} --password $ANACONDA_PASS --hostname $ANACONDA_HOSTNAME;
       bash ../travis-little-helper/clean-anaconda-channel.sh {{ conda_upload_channel }} $REPO_NAME $CLEAN_ANACONDA_CHANNEL;
       anaconda upload -u {{ conda_upload_channel }} `$CONDA_BUILD_COMMAND --output`;
       anaconda logout;
