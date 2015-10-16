@@ -6,10 +6,11 @@ python:
 allow_failures:
   - nightly
 
+# should be of the format '<3', '=2.7.3', or '>4.3'
 env:
   pymongo:
-    - <3
-    - >3
+    - '<3'
+    - '>3'
 
 conda_channels:
   - lightsource2

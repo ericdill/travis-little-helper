@@ -8,18 +8,13 @@ sudo: false
 services:
   - mongodb
 matrix:
-  include:{% for pyver in python %}
-  - python: {{ pyver }}{% endfor %}
+  fast_finish: true
+  include:{% for pyver in python %}{% for line in matrix %}
+  - python: {{ pyver }}
+    env: {{ line }}{% endfor %}{% endfor %}
 {% if allow_failures %}
   allow_failures:{% for fail_version in allow_failures %}
     - python: {{ fail_version }}{% endfor %}
-{% endif %}
-
-{% if env %}
-env:
-  {% for line in env %}
-  - {{ line }}
-  {% endfor %}
 {% endif %}
 
 before_install:
@@ -58,6 +53,7 @@ before_install:
   - conda create -n testenv pip nose python=$TRAVIS_PYTHON_VERSION "pymongo=2.9" six pyyaml numpy pandas jinja2 mongoengine boltons prettytable humanize
   - source activate testenv
   - pip install coveralls codecov
+  {% if env %}- conda install{% for lib, envvar in env | dictsort %} "{{ lib }}${{ envvar }}"{% endfor %}{% endif %}
 
 install:
   - python setup.py install

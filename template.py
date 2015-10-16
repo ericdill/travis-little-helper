@@ -54,10 +54,19 @@ def execute_programmatically(input_config_yaml, output_dir):
     travis_config = yaml.load(open(input_config_yaml, 'r'))
     print('travis_config = %s' % travis_config)
     # turn the env section of the travis config into the outer product of environments
-    libs = [(k, v) for k, v in travis_config.get('env', {}).items()]
-    if libs:
-        travis_config['env'] = nest_all_the_loops(libs.copy())
-
+    env = travis_config.get('env', {})
+    print('env from yaml = %s', env)
+    env_list = [(k, v) for k, v in env.items()]
+    print('library matrix = %s' % env_list)
+    if env_list:
+        env_outer_prod = nest_all_the_loops(env_list.copy())
+        matrix = []
+        for mat in env_outer_prod:
+            repos = ' '.join(['%s={%s}' % (k.upper(), k) for k in sorted(mat.keys()) if k != 'python'])
+            matrix.append(('%s' % repos).format(**mat))
+        print('env matrix = %s' % matrix)
+        travis_config['matrix'] = matrix
+        travis_config['env'] = {k.lower(): k.upper() for k in env.keys()}
     # create the jinja environment
     jinja_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
     template = jinja_env.get_template('nsls2.tmpl')
