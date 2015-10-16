@@ -11,7 +11,7 @@ matrix:
   fast_finish: true
   include:{% for pyver in python %}{% for line in matrix %}
   - python: {{ pyver }}
-    env: {{ line }}{% endfor %}{% endfor %}
+    env: "{{ line }}"{% endfor %}{% endfor %}
 {% if allow_failures %}
   allow_failures:{% for fail_version in allow_failures %}
     - python: {{ fail_version }}{% endfor %}
